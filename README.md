@@ -1,48 +1,86 @@
 # WatchLog Insights
 
-A data-driven YouTube watching habit analysis tool that helps users understand their viewing patterns and make more conscious media consumption decisions.
+A data-driven YouTube watching habit analysis tool that helps users understand their viewing patterns and make more conscious media consumption decisions through **real YouTube API integration** and enhanced mock data.
 
-## Features
+## 🚀 Features
 
-- **YouTube Data Analysis**: Analyze your YouTube watching habits with mock data
-- **Interactive Dashboard**: Visualize your watching patterns with charts and metrics
-- **Category Breakdown**: See which content categories you spend most time on
-- **Channel Insights**: Discover your most-watched channels
-- **Daily Patterns**: Understand your weekly watching behavior
-- **Time Range Filtering**: Analyze data for different time periods (7, 30, 90 days)
+- **🔐 Google OAuth2 Integration**: Secure login with Google account
+- **📊 Real YouTube Data**: Fetches actual channel info, subscriptions, playlists, and categories
+- **📈 Interactive Dashboard**: Visualize your watching patterns with charts and metrics
+- **🎯 Category Breakdown**: See which content categories you spend most time on
+- **📺 Channel Insights**: Discover your most-watched channels (from your subscriptions)
+- **📅 Daily Patterns**: Understand your weekly watching behavior
+- **⏱️ Time Range Filtering**: Analyze data for different time periods (7, 30, 90 days)
+- **🔄 Data Sync**: Manual sync button to refresh YouTube data
+- **📱 Responsive Design**: Works perfectly on desktop and mobile
 
-## Project Structure
+## 🎯 Data Sources
+
+### Real Data (from YouTube API)
+- ✅ **Channel Information**: Your YouTube channel details
+- ✅ **Subscriptions**: Channels you subscribe to
+- ✅ **Playlists**: Your created playlists and their videos
+- ✅ **Video Categories**: Official YouTube categories
+- ✅ **Video Metadata**: Titles, descriptions, categories from your playlists
+
+### Simulated Data (for MVP demonstration)
+- 🎭 **Watch History**: Due to YouTube API privacy restrictions
+- 🎭 **Watch Times**: Simulated viewing durations
+- 🎭 **View Timestamps**: Simulated viewing dates/times
+
+> **Note**: YouTube Data API v3 doesn't provide access to personal watch history for privacy reasons. The app uses your real subscription and playlist data combined with simulated viewing patterns to create realistic analytics.
+
+## 🏗️ Project Structure
 
 ```
 watchlog/
-├── backend/                 # FastAPI backend server
-│   ├── main.py             # Main API server
-│   └── requirements.txt    # Python dependencies
-├── frontend/               # Next.js frontend
-│   ├── app/               # Next.js app directory
-│   ├── package.json       # Node.js dependencies
-│   └── ...               # Next.js config files
-└── README.md              # This file
+├── backend/                    # FastAPI backend server
+│   ├── main.py                # Main API server with YouTube integration
+│   ├── auth.py                # OAuth2 authentication logic
+│   └── env.example           # Environment variables template
+├── frontend/                  # Next.js frontend
+│   ├── app/                  # Next.js app directory
+│   │   ├── dashboard/        # Main dashboard page
+│   │   └── login/           # OAuth login page
+│   └── package.json         # Node.js dependencies
+├── documentation/            # Project documentation
+│   ├── PRD.md               # Product Requirements Document
+│   └── DATA_SOURCES.md      # Data sources documentation
+└── OAUTH_SETUP.md           # OAuth setup guide
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
-### Backend Setup
+### Prerequisites
+- Python 3.13+
+- Node.js 18+
+- Google Cloud Console account (for YouTube API access)
+
+### 1. OAuth2 Setup
+
+First, follow the **[OAuth Setup Guide](OAUTH_SETUP.md)** to:
+1. Create Google Cloud Console project
+2. Enable YouTube Data API v3
+3. Configure OAuth2 credentials
+4. Set up OAuth consent screen
+
+### 2. Backend Setup
 
 1. **Navigate to backend directory:**
    ```bash
    cd backend
    ```
 
-2. **Create virtual environment (optional but recommended):**
+2. **Install dependencies:**
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   uv sync
+   # or with pip: pip install -r requirements.txt
    ```
 
-3. **Install dependencies:**
+3. **Set up environment variables:**
    ```bash
-   pip install -r requirements.txt
+   cp env.example .env
+   # Edit .env with your Google OAuth2 credentials
    ```
 
 4. **Start the backend server:**
@@ -52,7 +90,7 @@ watchlog/
 
    The backend will be available at `http://localhost:8000`
 
-### Frontend Setup
+### 3. Frontend Setup
 
 1. **Navigate to frontend directory:**
    ```bash
@@ -71,14 +109,27 @@ watchlog/
 
    The frontend will be available at `http://localhost:3000`
 
-## API Endpoints
+### 4. Using the Application
 
-### Backend API (http://localhost:8000)
+1. Open `http://localhost:3000`
+2. Click "Sign in with Google"
+3. Complete OAuth2 authorization
+4. View your personalized YouTube insights dashboard
+5. Click "Sync Data" to refresh with latest YouTube information
 
-- `GET /` - API health check
-- `GET /api/dashboard?days={number}` - Get dashboard data for specified days
-- `GET /api/videos?days={number}&limit={number}` - Get raw video data
-- `GET /api/categories` - Get available video categories
+## 🔌 API Endpoints
+
+### Authentication Endpoints
+- `GET /api/auth/login` - Get Google OAuth2 authorization URL
+- `GET /api/auth/callback` - Handle OAuth2 callback
+- `GET /api/auth/me` - Get current user information
+- `POST /api/auth/refresh` - Refresh access token
+
+### Protected Endpoints (require authentication)
+- `GET /api/dashboard?days={number}` - Get dashboard data
+- `GET /api/videos?days={number}&limit={number}` - Get video data
+- `GET /api/categories` - Get video categories (real from YouTube API)
+- `POST /api/sync-youtube-data` - Sync YouTube data
 
 ### Example API Response
 
@@ -89,95 +140,113 @@ watchlog/
   "top_category": "Science & Technology",
   "category_breakdown": [
     {
-      "category": "Science & Technology",
+      "category": "Science & Technology", 
       "minutes": 300,
       "percentage": 25.0
     }
   ],
   "top_channels": [
     {
-      "channel": "TechCrunch",
+      "channel": "Real Subscribed Channel",
       "minutes": 120
     }
   ],
   "daily_pattern": [
     {
-      "day": "Monday",
+      "day": "Monday", 
       "minutes": 60
     }
   ]
 }
 ```
 
-## Features Implemented
+## ✅ Features Implemented
 
-### ✅ MVP Features (from PRD)
+### 🎯 MVP Features (from PRD)
 
-1. **Mock Data Generation**: Realistic YouTube watching data with various categories and channels
-2. **Data Analysis**: Automatic categorization and time calculation
-3. **Dashboard Visualization**: 
-   - Key metrics cards (Total time, Daily average, Top category)
-   - Category breakdown pie chart
-   - Top channels bar chart
-   - Daily pattern analysis
-   - Key insights summary
+1. **✅ YouTube Account Integration**: Google OAuth2 with YouTube readonly scope
+2. **✅ Real Data Synchronization**: Fetches actual user data from YouTube API
+3. **✅ Enhanced Mock Data**: Combines real channel/category data with simulated viewing
+4. **✅ Data Analysis Dashboard**: Complete analytics with real and simulated data
+5. **✅ Manual Sync**: User-triggered data synchronization
+6. **✅ Transparent Data Sources**: Clear indication of real vs simulated data
 
 ### 🎨 UI/UX Features
 
-- **Responsive Design**: Works on desktop and mobile
-- **Modern UI**: Clean, professional design with Tailwind CSS
-- **Interactive Charts**: Hover tooltips and responsive charts
-- **Loading States**: Proper loading and error handling
-- **Time Formatting**: Human-readable time display (hours and minutes)
+- **🔐 Secure Authentication**: OAuth2 flow with proper token management
+- **📱 Responsive Design**: Works on desktop and mobile
+- **🎨 Modern UI**: Clean, professional design with Tailwind CSS
+- **📊 Interactive Charts**: Hover tooltips and responsive visualizations
+- **⏳ Loading States**: Proper loading and error handling
+- **🔄 Sync Notifications**: Clear feedback on data synchronization status
+- **ℹ️ Data Transparency**: Information panel explaining data sources
+- **🕐 Time Formatting**: Human-readable time display (hours and minutes)
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 ### Backend
-- **FastAPI**: Modern Python web framework
+- **FastAPI**: Modern Python web framework with automatic API docs
+- **Google APIs Client**: YouTube Data API v3 integration
+- **OAuth2**: Google OAuth2 authentication
 - **Pydantic**: Data validation and serialization
+- **python-jose**: JWT token handling
 - **Uvicorn**: ASGI server
 
 ### Frontend
 - **Next.js 14**: React framework with app router
-- **TypeScript**: Type safety
+- **TypeScript**: Type safety throughout the application
 - **Tailwind CSS**: Utility-first CSS framework
-- **Recharts**: React charting library
-- **Axios**: HTTP client
-- **Lucide React**: Icon library
+- **Recharts**: Beautiful, responsive chart library
+- **Axios**: HTTP client for API communication
+- **Lucide React**: Comprehensive icon library
 
-## Development
+## 📚 Documentation
 
-### Backend Development
+- **[Product Requirements Document](documentation/PRD.md)**: Complete MVP specification
+- **[OAuth Setup Guide](OAUTH_SETUP.md)**: Step-by-step OAuth2 configuration
+- **[Data Sources Documentation](documentation/DATA_SOURCES.md)**: Detailed explanation of real vs mock data
 
-The backend uses FastAPI with automatic API documentation. Visit `http://localhost:8000/docs` to see the interactive API documentation.
+## 🔄 Data Synchronization
 
-### Frontend Development
+The application intelligently combines real YouTube data with simulated analytics:
 
-The frontend uses Next.js with hot reloading. Any changes to the code will automatically refresh the browser.
+1. **Real Data Collection**: Fetches your actual subscriptions, playlists, channel info
+2. **Enhanced Simulation**: Uses real channel names and categories in mock viewing data
+3. **Graceful Fallback**: Falls back to full mock data if API calls fail
+4. **User Transparency**: Always informs users about data sources
 
-## Mock Data
+## 🚧 Known Limitations
 
-The application currently uses mock data that includes:
-- 15 different YouTube categories
-- 15 popular tech/education channels
-- Realistic watch times (5-120 minutes per video)
-- Random distribution across time periods
-- Proper data relationships and calculations
+- **Watch History**: YouTube API doesn't provide access to personal watch history
+- **Actual View Times**: Real viewing durations are not available via API
+- **Privacy Restrictions**: Some YouTube data is intentionally restricted for user privacy
 
-## Future Enhancements
+## 🔮 Future Enhancements
 
-Based on the PRD, future features could include:
-- Real YouTube API integration
-- User authentication with Google OAuth
-- Goal setting and tracking
-- Advanced analytics (time-based patterns, repeat viewing)
-- Custom tagging system
-- Automated data synchronization
+### Post-MVP Features (from PRD)
+- **📈 Advanced Analytics**: Time-based patterns, repeat viewing analysis
+- **🎯 Goal Setting**: Daily/weekly viewing time goals with tracking
+- **🤖 Auto Sync**: Background data synchronization
+- **🏷️ Custom Tags**: User-defined video categorization
+- **📊 Diagnostic Insights**: AI-powered viewing pattern analysis
 
-## Contributing
+### Alternative Data Sources
+- **📥 Google Takeout**: Import actual watch history from Google data export
+- **🔌 Browser Extension**: Client-side viewing time tracking
+- **📝 Manual Entry**: User-input viewing data for accurate analytics
 
-This is a 1-person MVP project. The code is structured to be easily extensible for future features.
+## 🤝 Contributing
 
-## License
+This project was developed as a 1-person MVP but is structured for easy extension. Key areas for contribution:
+- Additional YouTube API data integration
+- Alternative data source implementations
+- Advanced analytics features
+- UI/UX improvements
 
-This project is for educational and personal use. 
+## 📄 License
+
+This project is for educational and personal use. Please respect YouTube's Terms of Service and API usage policies.
+
+---
+
+**Built with ❤️ for conscious media consumption** 

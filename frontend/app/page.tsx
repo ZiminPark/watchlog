@@ -2,22 +2,24 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from './contexts/AuthContext'
 
 export default function HomePage() {
   const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuth()
 
   useEffect(() => {
-    // Check if user is authenticated
-    const token = localStorage.getItem('access_token')
-    
-    if (token) {
-      // User is authenticated, redirect to dashboard
-      router.push('/dashboard')
-    } else {
-      // User is not authenticated, redirect to login
-      router.push('/login')
+    // Wait for authentication check to complete
+    if (!isLoading) {
+      if (isAuthenticated) {
+        // User is authenticated, redirect to dashboard
+        router.push('/dashboard')
+      } else {
+        // User is not authenticated, redirect to login
+        router.push('/login')
+      }
     }
-  }, [router])
+  }, [isAuthenticated, isLoading, router])
 
   return (
     <div className="min-h-screen flex items-center justify-center">

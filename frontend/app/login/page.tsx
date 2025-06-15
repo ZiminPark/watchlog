@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { Youtube, LogIn, Loader2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { isAuthenticated, isLoading: authLoading, login } = useAuth();
 
   useEffect(() => {
     // Check if user is already authenticated (has token in URL params)
@@ -17,14 +19,23 @@ export default function LoginPage() {
     const userId = searchParams.get('user');
     
     if (token && userId) {
-      // Store token in localStorage
-      localStorage.setItem('access_token', token);
-      localStorage.setItem('user_id', userId);
+      // Use the auth context to login
+      login(token, userId);
       
-      // Redirect to dashboard
+      // Clear URL params
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('token');
+      newUrl.searchParams.delete('user');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [searchParams, login]);
+
+  useEffect(() => {
+    // Redirect to dashboard if already authenticated
+    if (isAuthenticated && !authLoading) {
       router.push('/dashboard');
     }
-  }, [searchParams, router]);
+  }, [isAuthenticated, authLoading, router]);
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
@@ -44,6 +55,30 @@ export default function LoginPage() {
     }
   };
 
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't show login page if already authenticated
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
@@ -57,7 +92,7 @@ export default function LoginPage() {
               WatchLog Insights
             </h2>
             <p className="text-gray-600 mb-8">
-              Understand your YouTube viewing habits with data-driven insights
+              Understand your YouTube subscription patterns with data-driven insights
             </p>
           </div>
 
@@ -107,7 +142,7 @@ export default function LoginPage() {
                   ✓
                 </div>
                 <span className="ml-3 text-sm text-gray-600">
-                  Detailed analysis of your viewing patterns
+                  Detailed analysis of your subscription patterns
                 </span>
               </li>
               <li className="flex items-start">
@@ -115,7 +150,7 @@ export default function LoginPage() {
                   ✓
                 </div>
                 <span className="ml-3 text-sm text-gray-600">
-                  Category breakdown and time insights
+                  Category breakdown and content preferences
                 </span>
               </li>
               <li className="flex items-start">
@@ -123,7 +158,7 @@ export default function LoginPage() {
                   ✓
                 </div>
                 <span className="ml-3 text-sm text-gray-600">
-                  Top channels and content preferences
+                  Top channels and subscriber insights
                 </span>
               </li>
               <li className="flex items-start">
