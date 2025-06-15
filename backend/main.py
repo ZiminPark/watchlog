@@ -9,6 +9,8 @@ import json
 import os
 from dotenv import load_dotenv
 
+load_dotenv(override=True)
+
 # Import authentication module
 from auth import (
     get_authorization_url,
@@ -20,8 +22,6 @@ from auth import (
     refresh_access_token,
 )
 
-# Load environment variables
-load_dotenv()
 
 app = FastAPI(title="WatchLog Insights API", version="1.0.0")
 

@@ -14,7 +14,6 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from jose import JWTError, jwt
 from pydantic import BaseModel
-import json
 
 # Security
 security = HTTPBearer()
@@ -25,6 +24,12 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_MINUTES = 60 * 24 * 7  # 7 days
+
+# OAuth2 redirect URI - should be configurable
+OAUTH2_REDIRECT_URI = os.getenv(
+    "OAUTH2_REDIRECT_URI", "http://localhost:3000/api/auth/callback"
+)
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 # YouTube API scopes
 SCOPES = [
@@ -41,8 +46,8 @@ OAUTH2_CONFIG = {
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
         "token_uri": "https://oauth2.googleapis.com/token",
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "redirect_uris": ["http://localhost:3000/api/auth/callback"],
-        "javascript_origins": ["http://localhost:3000"],
+        "redirect_uris": [OAUTH2_REDIRECT_URI],
+        "javascript_origins": [FRONTEND_URL],
     }
 }
 
@@ -114,7 +119,7 @@ def create_oauth_flow() -> Flow:
     flow = Flow.from_client_config(
         OAUTH2_CONFIG,
         scopes=SCOPES,
-        redirect_uri="http://localhost:3000/api/auth/callback",
+        redirect_uri=OAUTH2_REDIRECT_URI,
     )
     return flow
 

@@ -16,18 +16,10 @@ check_port() {
 echo "📡 Starting Backend Server..."
 cd backend
 
-# Check if Python virtual environment exists
-if [ ! -d "venv" ]; then
-    echo "🔧 Creating Python virtual environment..."
-    python3 -m venv venv
-fi
-
-# Activate virtual environment
-source venv/bin/activate
 
 # Install dependencies
 echo "📦 Installing backend dependencies..."
-pip install -r requirements.txt
+uv sync
 
 # Check if port 8000 is available
 if check_port 8000; then
