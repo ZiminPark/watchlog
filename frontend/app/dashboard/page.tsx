@@ -61,6 +61,12 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [syncResult, setSyncResult] = useState<{
+    message: string;
+    status: string;
+    channel_name?: string;
+    note?: string;
+  } | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState(30);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -127,12 +133,34 @@ export default function DashboardPage() {
 
   const handleSyncData = async () => {
     setIsSyncing(true);
+    setSyncResult(null);
+    setError(null);
+    
     try {
-      await axios.post('http://localhost:8000/api/sync-youtube-data');
+      const syncResponse = await axios.post('http://localhost:8000/api/sync-youtube-data');
+      setSyncResult(syncResponse.data);
+      
+      // Reload dashboard data after sync
       await loadDashboardData();
-    } catch (err) {
+      
+      // Clear sync result after 10 seconds
+      setTimeout(() => {
+        setSyncResult(null);
+      }, 10000);
+      
+    } catch (err: any) {
       console.error('Sync error:', err);
-      setError('Failed to sync YouTube data');
+      const errorMessage = err.response?.data?.detail || 'Failed to sync YouTube data';
+      setError(errorMessage);
+      
+      // Try to extract sync result from error response
+      if (err.response?.data) {
+        setSyncResult({
+          message: err.response.data.message || errorMessage,
+          status: 'error',
+          note: err.response.data.note
+        });
+      }
     } finally {
       setIsSyncing(false);
     }
@@ -219,11 +247,113 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {error && (
+        {/* Sync Result Notification */}
+        {syncResult && (
+          <div className={`mb-6 border rounded-lg p-4 ${
+            syncResult.status === 'success' 
+              ? 'bg-green-50 border-green-200' 
+              : syncResult.status === 'partial_success'
+              ? 'bg-yellow-50 border-yellow-200'
+              : 'bg-red-50 border-red-200'
+          }`}>
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                {syncResult.status === 'success' ? (
+                  <div className="w-5 h-5 bg-green-400 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                ) : syncResult.status === 'partial_success' ? (
+                  <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                ) : (
+                  <div className="w-5 h-5 bg-red-400 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div className="ml-3 flex-1">
+                <h3 className={`text-sm font-medium ${
+                  syncResult.status === 'success' 
+                    ? 'text-green-800' 
+                    : syncResult.status === 'partial_success'
+                    ? 'text-yellow-800'
+                    : 'text-red-800'
+                }`}>
+                  Data Sync {syncResult.status === 'success' ? 'Completed' : 
+                             syncResult.status === 'partial_success' ? 'Partially Completed' : 'Failed'}
+                </h3>
+                <div className={`mt-1 text-sm ${
+                  syncResult.status === 'success' 
+                    ? 'text-green-700' 
+                    : syncResult.status === 'partial_success'
+                    ? 'text-yellow-700'
+                    : 'text-red-700'
+                }`}>
+                  <p>{syncResult.message}</p>
+                  {syncResult.channel_name && (
+                    <p className="mt-1">
+                      Connected to channel: <span className="font-medium">{syncResult.channel_name}</span>
+                    </p>
+                  )}
+                  {syncResult.note && (
+                    <p className="mt-2 text-xs bg-white/50 p-2 rounded border">
+                      <strong>Note:</strong> {syncResult.note}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setSyncResult(null)}
+                className="flex-shrink-0 ml-4 text-gray-400 hover:text-gray-600"
+              >
+                <span className="sr-only">Close</span>
+                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {error && !syncResult && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-red-600">{error}</p>
           </div>
         )}
+
+        {/* Data Source Info */}
+        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <svg className="w-5 h-5 text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-blue-800">About Your Data</h3>
+              <div className="mt-1 text-sm text-blue-700">
+                <p>
+                  Due to YouTube API privacy restrictions, actual watch history is not accessible. 
+                  This dashboard shows:
+                </p>
+                <ul className="mt-2 list-disc list-inside space-y-1">
+                  <li><strong>Real data:</strong> Your channel info, subscriptions, playlists, and video categories</li>
+                  <li><strong>Simulated data:</strong> Watch times and viewing timestamps (for demo purposes)</li>
+                </ul>
+                <p className="mt-2 text-xs">
+                  Click "Sync Data" to refresh with your latest YouTube account information.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Period Selector */}
         <div className="mb-6">
