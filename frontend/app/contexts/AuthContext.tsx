@@ -16,7 +16,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (token: string, userId: string) => void;
+  login: (token: string, userId: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<boolean>;
 }
@@ -83,25 +83,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = (token: string, userId: string) => {
+  const login = async (token: string, userId: string) => {
     localStorage.setItem('access_token', token);
     localStorage.setItem('user_id', userId);
     
-    // Fetch user data
-    axios.get('http://localhost:8000/api/auth/me')
-      .then(response => {
-        const userData = response.data;
-        setUser({
-          id: userData.id,
-          email: userData.email,
-          name: userData.name,
-          picture: userData.picture,
-        });
-      })
-      .catch(error => {
-        console.error('Failed to fetch user data:', error);
-        logout();
+    try {
+      // Fetch user data
+      const response = await axios.get('http://localhost:8000/api/auth/me');
+      const userData = response.data;
+      
+      setUser({
+        id: userData.id,
+        email: userData.email,
+        name: userData.name,
+        picture: userData.picture,
       });
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      logout();
+    }
   };
 
   const logout = () => {

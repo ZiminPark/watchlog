@@ -584,7 +584,7 @@ async def auth_callback(code: str):
         # Redirect to frontend with token
         frontend_url = "http://localhost:3000"
         return RedirectResponse(
-            url=f"{frontend_url}/dashboard?token={access_token}&user={user_info.id}"
+            url=f"{frontend_url}/login?token={access_token}&user={user_info.id}"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Authentication failed: {str(e)}")

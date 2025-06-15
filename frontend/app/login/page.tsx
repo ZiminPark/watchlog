@@ -20,15 +20,22 @@ export default function LoginPage() {
     
     if (token && userId) {
       // Use the auth context to login
-      login(token, userId);
+      const handleLogin = async () => {
+        await login(token, userId);
+        
+        // Clear URL params
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('token');
+        newUrl.searchParams.delete('user');
+        window.history.replaceState({}, '', newUrl.toString());
+        
+        // Immediately redirect to dashboard
+        router.push('/dashboard');
+      };
       
-      // Clear URL params
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.delete('token');
-      newUrl.searchParams.delete('user');
-      window.history.replaceState({}, '', newUrl.toString());
+      handleLogin();
     }
-  }, [searchParams, login]);
+  }, [searchParams, login, router]);
 
   useEffect(() => {
     // Redirect to dashboard if already authenticated
