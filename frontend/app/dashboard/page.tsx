@@ -319,27 +319,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Data Source Info */}
-          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <Eye className="h-5 w-5 text-blue-600" />
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800">Data Source</h3>
-                <div className="mt-1 text-sm text-blue-700">
-                  <p>This dashboard combines real YouTube API data with simulated viewing patterns to provide comprehensive insights.</p>
-                  <p className="mt-1">
-                    <strong>Real data:</strong> Channel information, subscriber counts, video counts, and categories from your YouTube subscriptions.
-                  </p>
-                  <p className="mt-1">
-                    <strong>Simulated data:</strong> Viewing patterns and time-based analytics to demonstrate the full potential of the platform.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
+          
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow p-6">

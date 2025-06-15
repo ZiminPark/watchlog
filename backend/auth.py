@@ -27,7 +27,7 @@ JWT_EXPIRATION_MINUTES = 60 * 24 * 7  # 7 days
 
 # OAuth2 redirect URI - should be configurable
 OAUTH2_REDIRECT_URI = os.getenv(
-    "OAUTH2_REDIRECT_URI", "http://localhost:8000/api/auth/callback"
+    "OAUTH2_REDIRECT_URI", "http://localhost:3000/api/auth/callback"
 )
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 

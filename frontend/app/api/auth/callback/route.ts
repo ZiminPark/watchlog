@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const token = searchParams.get('token');
-  const user = searchParams.get('user');
+  const code = searchParams.get('code');
+  const state = searchParams.get('state');
 
-  if (token && user) {
-    // Redirect to dashboard with token and user info
-    const dashboardUrl = new URL('/dashboard', request.url);
-    dashboardUrl.searchParams.set('token', token);
-    dashboardUrl.searchParams.set('user', user);
+  if (code && state) {
+    // Redirect to backend OAuth callback
+    const backendUrl = new URL('/api/auth/callback', 'http://localhost:8000');
+    backendUrl.searchParams.set('code', code);
+    backendUrl.searchParams.set('state', state);
     
-    return NextResponse.redirect(dashboardUrl);
+    return NextResponse.redirect(backendUrl);
   }
 
-  // If no token, redirect to login
+  // If no code, redirect to login
   return NextResponse.redirect(new URL('/login', request.url));
 } 
