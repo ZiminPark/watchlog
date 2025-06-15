@@ -1,10 +1,27 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
 import random
 import json
+import os
+from dotenv import load_dotenv
+
+# Import authentication module
+from auth import (
+    get_authorization_url,
+    exchange_code_for_tokens,
+    create_access_token,
+    get_current_user,
+    TokenData,
+    get_youtube_service,
+    refresh_access_token,
+)
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI(title="WatchLog Insights API", version="1.0.0")
 
@@ -36,6 +53,20 @@ class DashboardData(BaseModel):
     category_breakdown: List[dict]
     top_channels: List[dict]
     daily_pattern: List[dict]
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user: dict
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+
+# In-memory storage for user tokens (in production, use a database)
+user_tokens = {}
 
 
 # Mock data generation
@@ -181,14 +212,85 @@ def analyze_watch_data(videos: List[VideoData]) -> DashboardData:
     )
 
 
-# API endpoints
+# Authentication endpoints
+@app.get("/api/auth/login")
+async def login():
+    """Get Google OAuth2 authorization URL"""
+    try:
+        auth_url = get_authorization_url()
+        return {"auth_url": auth_url}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to generate auth URL: {str(e)}"
+        )
+
+
+@app.get("/api/auth/callback")
+async def auth_callback(code: str):
+    """Handle OAuth2 callback and exchange code for tokens"""
+    try:
+        # Exchange authorization code for tokens
+        user_info = exchange_code_for_tokens(code)
+
+        # Create JWT access token
+        access_token = create_access_token(
+            data={
+                "sub": user_info.id,
+                "email": user_info.email,
+                "name": user_info.name,
+                "picture": user_info.picture,
+            }
+        )
+
+        # Store user tokens (in production, use a database)
+        user_tokens[user_info.id] = {
+            "access_token": user_info.access_token,
+            "refresh_token": user_info.refresh_token,
+            "token_expiry": (
+                user_info.token_expiry.isoformat() if user_info.token_expiry else None
+            ),
+        }
+
+        # Redirect to frontend with token
+        frontend_url = "http://localhost:3000"
+        return RedirectResponse(
+            url=f"{frontend_url}/dashboard?token={access_token}&user={user_info.id}"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Authentication failed: {str(e)}")
+
+
+@app.post("/api/auth/refresh")
+async def refresh_token(request: RefreshTokenRequest):
+    """Refresh access token using refresh token"""
+    try:
+        result = refresh_access_token(request.refresh_token)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Token refresh failed: {str(e)}")
+
+
+@app.get("/api/auth/me")
+async def get_current_user_info(current_user: TokenData = Depends(get_current_user)):
+    """Get current user information"""
+    return {
+        "id": current_user.user_id,
+        "email": current_user.email,
+        "name": current_user.name,
+        "picture": current_user.picture,
+    }
+
+
+# Protected API endpoints
 @app.get("/")
 async def root():
     return {"message": "WatchLog Insights API", "version": "1.0.0"}
 
 
 @app.get("/api/dashboard")
-async def get_dashboard(days: int = 30):
+async def get_dashboard(
+    days: int = 30, current_user: TokenData = Depends(get_current_user)
+):
     """Get dashboard data for the specified number of days"""
     try:
         videos = generate_mock_videos(days)
@@ -199,7 +301,9 @@ async def get_dashboard(days: int = 30):
 
 
 @app.get("/api/videos")
-async def get_videos(days: int = 30, limit: int = 50):
+async def get_videos(
+    days: int = 30, limit: int = 50, current_user: TokenData = Depends(get_current_user)
+):
     """Get raw video data for the specified number of days"""
     try:
         videos = generate_mock_videos(days)
@@ -209,7 +313,7 @@ async def get_videos(days: int = 30, limit: int = 50):
 
 
 @app.get("/api/categories")
-async def get_categories():
+async def get_categories(current_user: TokenData = Depends(get_current_user)):
     """Get available video categories"""
     categories = [
         {"id": 1, "name": "Film & Animation"},
@@ -229,6 +333,31 @@ async def get_categories():
         {"id": 29, "name": "Nonprofits & Activism"},
     ]
     return categories
+
+
+@app.post("/api/sync-youtube-data")
+async def sync_youtube_data(current_user: TokenData = Depends(get_current_user)):
+    """Sync YouTube watch history data"""
+    try:
+        # Get user's stored tokens
+        user_token_data = user_tokens.get(current_user.user_id)
+        if not user_token_data:
+            raise HTTPException(status_code=401, detail="No stored tokens found")
+
+        # Create YouTube service
+        youtube_service = get_youtube_service(user_token_data["access_token"])
+
+        # Get watch history (this is a placeholder - actual implementation would be more complex)
+        # Note: YouTube Data API v3 doesn't provide direct access to watch history
+        # This would require additional implementation or different approach
+
+        return {
+            "message": "YouTube data sync initiated",
+            "status": "success",
+            "note": "YouTube Data API v3 doesn't provide direct watch history access",
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
 
 if __name__ == "__main__":
