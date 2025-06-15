@@ -1,0 +1,68 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Frontend Development Guidelines
+
+## Next.js 14 Application Structure
+The frontend uses Next.js 14 with the app router and follows these patterns:
+
+### Main Components
+- [frontend/app/page.tsx](mdc:frontend/app/page.tsx) - Main dashboard page with all charts and metrics
+- [frontend/app/layout.tsx](mdc:frontend/app/layout.tsx) - Root layout with metadata and global styles
+- [frontend/app/globals.css](mdc:frontend/app/globals.css) - Global CSS with Tailwind directives
+
+### Technology Stack
+- **Framework**: Next.js 14 with app router
+- **Language**: TypeScript for type safety
+- **Styling**: Tailwind CSS for utility-first styling
+- **Charts**: Recharts for data visualization
+- **HTTP Client**: Axios for API calls
+- **Icons**: Lucide React for consistent iconography
+
+### UI/UX Patterns
+- **Responsive Design**: Mobile-first approach with Tailwind breakpoints
+- **Modern UI**: Clean, professional design with proper spacing and typography
+- **Interactive Charts**: Hover tooltips and responsive chart components
+- **Loading States**: Proper loading indicators and error handling
+- **Time Formatting**: Human-readable time display (hours and minutes)
+
+### Dashboard Features
+The main dashboard includes:
+- Key metrics cards (Total time, Daily average, Top category)
+- Category breakdown pie chart
+- Top channels bar chart
+- Daily pattern analysis
+- Key insights summary
+- Time range filtering (7, 30, 90 days)
+
+### Configuration Files
+- [frontend/package.json](mdc:frontend/package.json) - Dependencies and scripts
+- [frontend/tailwind.config.js](mdc:frontend/tailwind.config.js) - Tailwind CSS configuration
+- [frontend/tsconfig.json](mdc:frontend/tsconfig.json) - TypeScript configuration
+- [frontend/next.config.js](mdc:frontend/next.config.js) - Next.js configuration
+
+### Development Commands
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+### API Integration
+- Frontend communicates with backend at `http://localhost:8000`
+- Uses Axios for HTTP requests
+- Implements proper error handling and loading states
+- Supports query parameters for time range filtering
+
+### Styling Guidelines
+- Use Tailwind CSS utility classes for styling
+- Follow consistent spacing and color schemes
+- Implement responsive design for all screen sizes
+- Use semantic HTML elements for accessibility

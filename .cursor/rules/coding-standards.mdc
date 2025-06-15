@@ -1,0 +1,101 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Coding Standards and Best Practices
+
+## Python Standards (Backend)
+
+### Code Formatting
+- **Line Length**: 88 characters (Black default)
+- **Indentation**: 4 spaces (no tabs)
+- **Quotes**: Double quotes for strings
+- **Imports**: Sorted with isort, grouped by standard library, third-party, local
+
+### Naming Conventions
+- **Functions**: `snake_case` (e.g., `get_dashboard_data`)
+- **Variables**: `snake_case` (e.g., `total_watch_time`)
+- **Classes**: `PascalCase` (e.g., `DashboardResponse`)
+- **Constants**: `UPPER_SNAKE_CASE` (e.g., `MAX_VIDEOS`)
+- **Modules**: `snake_case` (e.g., `main.py`)
+
+### FastAPI Best Practices
+- Use Pydantic models for request/response validation
+- Implement proper error handling with HTTPException
+- Use dependency injection for shared resources
+- Document endpoints with proper descriptions
+- Use type hints for all function parameters and return values
+
+### Code Quality Tools
+Configured in [pyproject.toml](mdc:pyproject.toml):
+- **Ruff**: Fast linting with strict rules
+- **MyPy**: Static type checking
+- **Pylint**: Additional code quality checks
+- **Black**: Uncompromising code formatting
+
+## TypeScript Standards (Frontend)
+
+### Code Formatting
+- **Line Length**: 80 characters
+- **Indentation**: 2 spaces
+- **Quotes**: Single quotes for strings
+- **Semicolons**: Required at end of statements
+
+### Naming Conventions
+- **Components**: `PascalCase` (e.g., `DashboardChart`)
+- **Functions**: `camelCase` (e.g., `fetchDashboardData`)
+- **Variables**: `camelCase` (e.g., `totalWatchTime`)
+- **Constants**: `UPPER_SNAKE_CASE` (e.g., `API_BASE_URL`)
+- **Files**: `kebab-case` (e.g., `dashboard-chart.tsx`)
+
+### React/Next.js Best Practices
+- Use functional components with hooks
+- Implement proper TypeScript interfaces for props and state
+- Use proper error boundaries and loading states
+- Follow Next.js 14 app router conventions
+- Use semantic HTML elements for accessibility
+
+### Styling Guidelines
+- Use Tailwind CSS utility classes
+- Follow consistent spacing and color schemes
+- Implement responsive design patterns
+- Use CSS custom properties for theme values
+
+## General Development Practices
+
+### Git Workflow
+- Use descriptive commit messages
+- Follow conventional commit format
+- Create feature branches for new development
+- Use pull requests for code review
+
+### Documentation
+- Document all public APIs and functions
+- Include examples in docstrings
+- Keep README.md updated with setup instructions
+- Document configuration options
+
+### Error Handling
+- Implement proper error boundaries in React
+- Use try-catch blocks for async operations
+- Provide meaningful error messages
+- Log errors appropriately
+
+### Performance
+- Optimize bundle size with code splitting
+- Use React.memo for expensive components
+- Implement proper caching strategies
+- Monitor and optimize API response times
+
+### Security
+- Validate all user inputs
+- Use environment variables for sensitive data
+- Implement proper CORS policies
+- Sanitize data before rendering
+
+### Testing
+- Write unit tests for critical functions
+- Test API endpoints with proper fixtures
+- Implement integration tests for user flows
+- Maintain good test coverage

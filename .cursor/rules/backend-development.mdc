@@ -1,0 +1,58 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Backend Development Guidelines
+
+## FastAPI Application Structure
+The backend is built with FastAPI and follows these patterns:
+
+### Main Application
+- [backend/main.py](mdc:backend/main.py) - Contains the main FastAPI app and all API endpoints
+- Uses Pydantic models for request/response validation
+- Implements mock data generation for YouTube watching habits
+
+### API Endpoints
+- `GET /` - Health check endpoint
+- `GET /api/dashboard?days={number}` - Dashboard data with time range filtering
+- `GET /api/videos?days={number}&limit={number}` - Raw video data
+- `GET /api/categories` - Available video categories
+
+### Code Quality Standards
+- **Formatting**: Use Black with 88 character line length (configured in [pyproject.toml](mdc:pyproject.toml))
+- **Import Sorting**: Use isort for consistent import organization
+- **Linting**: Ruff for fast Python linting with strict rules
+- **Type Checking**: MyPy for static type checking
+- **Pre-commit**: Automated checks before commits
+
+### Development Commands
+```bash
+# Format code
+make format
+
+# Run linting and type checking
+make lint
+
+# Start backend server
+cd backend && python main.py
+```
+
+### Dependencies
+Key dependencies defined in [pyproject.toml](mdc:pyproject.toml):
+- `fastapi==0.104.1` - Web framework
+- `pydantic==2.10.6` - Data validation
+- `uvicorn[standard]==0.24.0` - ASGI server
+
+### Mock Data Structure
+The application generates realistic YouTube watching data including:
+- 15 different video categories
+- 15 popular tech/education channels
+- Watch times between 5-120 minutes per video
+- Proper time calculations and category breakdowns
+
+### API Response Format
+All endpoints return JSON with consistent structure:
+- Dashboard data includes total watch time, daily averages, category breakdown
+- Video data includes channel, category, duration, and timestamp
+- Categories endpoint returns available video categories

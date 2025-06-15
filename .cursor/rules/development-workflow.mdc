@@ -1,0 +1,104 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Development Workflow Guidelines
+
+## Getting Started
+The project uses a streamlined development workflow with automated scripts and tools.
+
+### Quick Start
+Use the provided startup script to launch both servers:
+```bash
+./start-servers.sh
+```
+This script will:
+- Create Python virtual environment if needed
+- Install backend dependencies
+- Install frontend dependencies
+- Start backend server on port 8000
+- Start frontend server on port 3000
+- Provide cleanup on exit
+
+### Manual Development Setup
+If you prefer manual setup:
+
+**Backend:**
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Code Quality Tools
+
+### Python Code Quality
+Configured in [pyproject.toml](mdc:pyproject.toml):
+- **Black**: Code formatting with 88 character line length
+- **isort**: Import sorting and organization
+- **Ruff**: Fast Python linting with strict rules
+- **MyPy**: Static type checking
+- **Pylint**: Additional code quality checks
+
+### Development Commands
+Use the [Makefile](mdc:Makefile) for common tasks:
+```bash
+# Format Python code
+make format
+
+# Run linting and type checking
+make lint
+
+# Run unit tests with coverage
+make utest
+
+# View coverage report
+make cov
+```
+
+### Pre-commit Hooks
+The project uses pre-commit hooks configured in [.pre-commit-config.yaml](mdc:.pre-commit-config.yaml) to ensure code quality before commits.
+
+## Project Structure
+```
+watchlog/
+├── backend/                 # FastAPI backend
+│   ├── main.py             # Main application
+│   └── requirements.txt    # Python dependencies
+├── frontend/               # Next.js frontend
+│   ├── app/               # Next.js app directory
+│   ├── package.json       # Node.js dependencies
+│   └── ...               # Configuration files
+├── src/                   # Additional Python source code
+├── test/                  # Test files
+├── documentation/         # Project documentation
+└── .github/              # GitHub workflows and templates
+```
+
+## API Development
+- Backend API documentation available at http://localhost:8000/docs
+- Interactive Swagger UI for testing endpoints
+- Consistent JSON response format across all endpoints
+- Proper error handling and status codes
+
+## Testing Strategy
+- Unit tests for backend functionality
+- Frontend component testing (when implemented)
+- API integration testing
+- Coverage reporting for code quality metrics
+
+## Deployment Considerations
+- Backend can be deployed with Uvicorn or Gunicorn
+- Frontend builds to static files for deployment
+- Environment variables for configuration
+- Docker support can be added for containerization

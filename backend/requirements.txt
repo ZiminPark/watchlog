@@ -1,8 +1,0 @@
-
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-python-multipart
-
-pydantic==2.10.6
-pydantic_core==2.27.2
-pydantic-settings==2.8.1
