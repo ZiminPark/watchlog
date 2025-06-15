@@ -1,21 +1,41 @@
-pre-commit == 2.17.0
-
-# formatter
-isort == 5.10.1                 # imports
-black == 22.3.0                 # coding style
-
-# linter
-pylint              == 2.12.2   # python static code analysis
-mypy                == 0.931    # type check
-flake8              == 3.8.4    # PyFlakes + pycodestyle + Ned Batchelder’s McCabe script
-flake8-docstrings   == 1.6.0    # pydocstyle tool to flake8
-flake8-annotations  == 2.7.0    # PEP 3107-style function annotations
-flake8-builtins     == 1.5.3    # check python builtins being used as variables or parameters
-flake8-bugbear      == 22.1.11  # find likely bugs and design problems
-
-# pytest for linting and unit test
-pytest          == 6.2.5
-pytest-pylint   == 0.18.0
-pytest-flake8   == 1.0.7
-pytest-mypy     == 0.8.0
-pytest-cov      == 3.0.0        # coverage reports
+annotated-types==0.7.0
+astroid==3.3.8
+black==25.1.0
+certifi==2025.1.31
+cfgv==3.4.0
+charset-normalizer==3.4.1
+click==8.1.8
+colorlog==6.9.0
+dill==0.3.9
+distlib==0.3.9
+docopt==0.6.2
+filelock==3.17.0
+identify==2.6.8
+idna==3.10
+iniconfig==2.0.0
+isort==6.0.1
+mccabe==0.7.0
+mypy==1.15.0
+mypy-extensions==1.0.0
+nodeenv==1.9.1
+packaging==24.2
+pathspec==0.12.1
+pip==25.0.1
+platformdirs==4.3.6
+pluggy==1.5.0
+pre_commit==4.1.0
+pydantic==2.10.6
+pydantic_core==2.27.2
+pydantic-settings==2.8.1
+pylint==3.3.4
+pytest==8.3.4
+python-dotenv==1.0.1
+PyYAML==6.0.2
+requests==2.32.3
+ruff==0.9.8
+tomlkit==0.13.2
+typing_extensions==4.12.2
+urllib3==2.3.0
+virtualenv==20.29.2
+watchdog==6.0.0
+yarg==0.1.10

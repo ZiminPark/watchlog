@@ -1,0 +1,132 @@
+[project]
+name = "watchlog"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "annotated-types==0.7.0",
+    "astroid==3.3.8",
+    "black==25.1.0",
+    "certifi==2025.1.31",
+    "cfgv==3.4.0",
+    "charset-normalizer==3.4.1",
+    "click==8.1.8",
+    "colorlog==6.9.0",
+    "dill==0.3.9",
+    "distlib==0.3.9",
+    "docopt==0.6.2",
+    "filelock==3.17.0",
+    "identify==2.6.8",
+    "idna==3.10",
+    "iniconfig==2.0.0",
+    "isort==6.0.1",
+    "mccabe==0.7.0",
+    "mypy==1.15.0",
+    "mypy-extensions==1.0.0",
+    "nodeenv==1.9.1",
+    "packaging==24.2",
+    "pathspec==0.12.1",
+    "pip==25.0.1",
+    "platformdirs==4.3.6",
+    "pluggy==1.5.0",
+    "pre-commit==4.1.0",
+    "pydantic==2.10.6",
+    "pydantic-core==2.27.2",
+    "pydantic-settings==2.8.1",
+    "pylint==3.3.4",
+    "pytest==8.3.4",
+    "python-dotenv==1.0.1",
+    "pyyaml==6.0.2",
+    "requests==2.32.3",
+    "ruff==0.9.8",
+    "tomlkit==0.13.2",
+    "typing-extensions==4.12.2",
+    "urllib3==2.3.0",
+    "virtualenv==20.29.2",
+    "watchdog==6.0.0",
+    "yarg==0.1.10",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py313']
+skip-string-normalization = false
+skip-magic-trailing-comma = false
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+show-fixes = true
+unsafe-fixes = false
+lint.select = [
+    "B",    # bugbear
+    "D",    # pydocstyle
+    "E",    # pycodestyle
+    "F",    # Pyflakes
+    "W",    # pycodestyle
+    "I",    # isort
+    "RUF",  # ruff
+    "UP",   # pyupgrade
+    "C90",  # mccabe
+]
+lint.ignore = [
+    "B905",     # `zip()` without an explicit `strict=` parameter
+    "D100",     # Missing docstring in public module
+    "D101",     # Missing docstring in public class
+    "D102",     # Missing docstring in public method
+    "D103",     # Missing docstring in public function
+    "D104",     # Missing docstring in public package
+    "D105",     # Missing docstring in magic method
+    "D106",     # Missing docstring in public nested class
+    "D107",     # Missing docstring in __init__
+    "D203",     # 1 blank line required before class docstring
+    "D205",     # 1 blank line required between summary line and description
+    "D212",     # Multi-line docstring summary should start at the second line
+    "D400",     # First line should end with a period
+    "D401",     # First line of docstring should be in imperative mood
+    "E501",     # Line too long ({width} > {limit})
+    "RUF012",   # mutable default values in class attributes
+]
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pylint.messages_control]
+disable = [
+    "C0114",  # 모듈 docstring 없음 경고 무시
+    "C0115",  # 클래스 docstring 없음 경고 무시
+    "C0116",  # 함수 docstring 없음 경고 무시
+    "C0301",  # line 이 너무 김
+    "R0903",  # 너무 적은 public 메서드 경고 무시
+]
+enable = [
+    "E",  # Error
+    "W",  # Warning
+    "R",  # Refactoring
+]
+
+[tool.pylint.format]
+max-line-length = 88  # 최대 줄 길이
+indent-string = "    "  # 4칸 공백 사용
+
+[tool.pylint.design]
+max-args = 5  # 함수의 최대 인자 개수
+max-attributes = 10  # 클래스의 최대 속성 개수
+max-locals = 15  # 지역 변수 개수 제한
+max-returns = 6  # 함수에서 `return` 개수 제한
+max-statements = 50  # 함수 내 최대 코드 줄 수 제한
+min-public-methods = 0 # class 내의 public method 숫자가 무시. R0903 제외가 안먹어서 1로 줄임
+
+[tool.pylint.similarities]
+min-similarity-lines = 10  # 중복 코드 감지 기준 (10줄 이상)
+ignore-comments = true  # 주석 제외
+
+[tool.pylint.reports]
+output-format = "colorized"  # 색상이 있는 출력 사용
